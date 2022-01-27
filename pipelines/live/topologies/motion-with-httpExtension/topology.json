@@ -2,7 +2,7 @@
   "@apiVersion": "1.1",
   "name": "EVROnMotionPlusHttpExtension",
   "properties": {
-    "description": "Event-based video recording to Video Sink based on motion events, and using HTTP Extension to send images to an external inference engine",
+    "description": "Event-based File recording to File Sink based on motion events, and using HTTP Extension to send images to an external inference engine",
     "parameters": [
       {
         "name": "rtspUserName",
@@ -27,6 +27,12 @@
         "description": "motion detection sensitivity",
         "default": "medium"
       },
+      {
+        "name": "fileSinkOutputName",
+        "type": "String",
+        "description": "file sink output name",
+        "default": "filesinkOutput"
+      },      
       {
         "name": "httpAIServerAddress",
         "type": "String",
@@ -156,9 +162,8 @@
     ],
     "sinks": [
       {
-        "@type": "#Microsoft.VideoAnalyzer.VideoSink",
-        "name": "videoSink",
-        "videoName": "sample-motion-with-http-extension",
+        "@type": "#Microsoft.VideoAnalyzer.FileSink",
+        "name": "fileSink",
         "inputs": [
           {
             "nodeName": "signalGateProcessor",
@@ -171,13 +176,9 @@
             ]
           }
         ],
-        "videoCreationProperties": {
-          "title": "sample-motion-with-http-extension",
-          "description": "Sample video using motion with HTTP extension",
-          "segmentLength": "PT30S"
-        },
-        "localMediaCachePath": "/var/lib/videoanalyzer/tmp/",
-        "localMediaCacheMaximumSizeMiB": "2048"
+        "fileNamePattern": "sampleFilesFromEVR-motion-${System.TopologyName}-${System.PipelineName}-${fileSinkOutputName}-${System.Runtime.DateTime}",
+        "maximumSizeMiB": "512",
+        "baseDirectoryPath": "/var/media"
       },
       {
         "@type": "#Microsoft.VideoAnalyzer.IotHubMessageSink",
